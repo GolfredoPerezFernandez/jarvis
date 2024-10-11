@@ -1,28 +1,86 @@
+// Este es tu archivo de esquema de Prisma adaptado para PostgreSQL
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgres"
-  url               = env("DATABASE_PRISMA_URL")
-}
-
-model Note {
-  id        String   @id @default(uuid())
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  provider = "postgres"
+  url      = env("DATABASE_PRISMA_URL")
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  name         String
-  password     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  featureFlags Json     @default("{}")
-  Note         Note[]
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  profile   UserProfile?
+}
+
+model UserProfile {
+  id                  String     @id @default(uuid())
+  userId              String     @unique
+  user                User       @relation(fields: [userId], references: [id])
+
+  name                String
+  dateOfBirth         DateTime
+  role                String
+  experience          String
+
+  businessName        String
+  businessDescription String
+  industry            String
+  marketSophistication Int
+  businessAge         String
+  teamSize            String
+  salesGoal           String
+  businessChallenges  String
+
+  // Relaciones con Product y Metric
+  products            Product[] // Relación uno-a-muchos con Product
+  metrics             Metric[]  // Relación uno-a-muchos con Metric
+
+  audience            String
+  buyerPersona        String
+  audienceProblem     String
+  leadStrategy        String
+  leadCapture         Int
+  trafficSource       String
+  conversion          String?
+  communicationTone   String
+
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+}
+
+model Product {
+  id                  String      @id @default(uuid())
+  userProfileId       String
+  userProfile         UserProfile @relation(fields: [userProfileId], references: [id])
+
+  name                String
+  description         String
+  ticketPrice         String
+  sales               String
+  revenue             String
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+}
+
+model Metric {
+  id                  String      @id @default(uuid())
+  userProfileId       String
+  userProfile         UserProfile @relation(fields: [userProfileId], references: [id])
+
+  leadsCaptured       Int
+  leadsConversion     String?
+  LTV                 String?
+  CPA                 String?
+  adInvestment        String?
+  ROAS                String?
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 }

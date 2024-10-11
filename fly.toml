@@ -1,59 +1,70 @@
-# fly.toml app configuration file generated for remix-prisma-starter on 2023-04-27T11:41:14+01:00
+# fly.toml app configuration file generated for jarvis-black-silence-7123 on 2024-10-10T22:00:47-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "remix-prisma-starter"
-primary_region = "mad"
-kill_signal = "SIGINT"
-kill_timeout = "5s"
+app = 'jarvis-black-silence-7123'
+primary_region = 'mad'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
 
 [experimental]
-  allowed_public_ports = []
+  cmd = ['docker-start.sh']
+  entrypoint = ['sh']
   auto_rollback = true
-  cmd = "docker-start.sh"
-  entrypoint = "sh"
+
+[build]
 
 [env]
-  METRICS_PORT = "8081"
-  PORT = "8080"
-  PRIMARY_REGION = "mad"
-  SECURE_AUTH_COOKIE= "true"
-  NODE_ENV = "production"
+  METRICS_PORT = '8081'
+  NODE_ENV = 'production'
+  PORT = '8080'
+  PRIMARY_REGION = 'mad'
+  SECURE_AUTH_COOKIE = 'true'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
 [[services]]
-  protocol = "tcp"
+  protocol = 'tcp'
   internal_port = 8080
-  processes = ["app"]
+  processes = ['app']
 
   [[services.ports]]
     port = 80
-    handlers = ["http"]
+    handlers = ['http']
     force_https = true
 
   [[services.ports]]
     port = 443
-    handlers = ["tls", "http"]
+    handlers = ['tls', 'http']
+
   [services.concurrency]
-    type = "connections"
+    type = 'connections'
     hard_limit = 25
     soft_limit = 20
 
   [[services.tcp_checks]]
-    interval = "15s"
-    timeout = "2s"
-    grace_period = "1s"
-    restart_limit = 0
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '1s'
 
   [[services.http_checks]]
-    interval = "10s"
-    timeout = "2s"
-    grace_period = "5s"
-    restart_limit = 0
-    method = "get"
-    path = "/healthcheck"
-    protocol = "http"
+    interval = '10s'
+    timeout = '2s'
+    grace_period = '5s'
+    method = 'get'
+    path = '/healthcheck'
+    protocol = 'http'
 
-[metrics]
+[[vm]]
+  size = 'performance-1x'
+
+[[metrics]]
   port = 8081
-  path = "/metrics"
+  path = '/metrics'
